@@ -36,6 +36,12 @@ In this experiment, I implemented the original Yew webchat flow from the tutoria
 
 ![Experiment 3.1 YewChat output](assets/screenshots/experiment-3-1.png)
 
+## Experiment 3.2: Add Some Creativities to the Webclient
+
+In this experiment, I improved the Yew webclient UI while keeping the websocket message format unchanged. I added a room sidebar that shows the active room name and the current number of messages. I also added quick message buttons so a user can send common chat messages without typing them manually. The message view now renders a local timestamp for each broadcast received by the client. These changes make the page feel more like a focused chat application instead of a plain websocket demo. The JSON format remains `{ "sender": "...", "text": "..." }`, so the JavaScript websocket server from Experiment 3.1 still works without modification. The screenshot confirms that the updated layout still connects to the websocket server and renders a broadcast message.
+
+![Experiment 3.2 creative YewChat output](assets/screenshots/experiment-3-2.png)
+
 ## Commit and Pull Request Links
 
 The final commit and pull request links will be collected after all experiment pull requests are merged.
