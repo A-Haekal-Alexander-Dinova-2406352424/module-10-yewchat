@@ -2,6 +2,7 @@ use futures_channel::mpsc::{unbounded, UnboundedSender};
 use futures_util::{SinkExt, StreamExt};
 use gloo_net::websocket::{futures::WebSocket, Message};
 use gloo_timers::future::TimeoutFuture;
+use js_sys::Date;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen_futures::spawn_local;
 use web_sys::{HtmlInputElement, SubmitEvent};
@@ -13,10 +14,24 @@ struct ChatMessage {
     text: String,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+struct RenderedMessage {
+    sender: String,
+    text: String,
+    received_at: String,
+}
+
 fn demo_mode() -> bool {
     web_sys::window()
         .and_then(|window| window.location().search().ok())
         .is_some_and(|search| search.contains("demo=1"))
+}
+
+fn current_time() -> String {
+    Date::new_0()
+        .to_locale_time_string("en-GB")
+        .as_string()
+        .unwrap_or_else(|| "now".to_string())
 }
 
 #[function_component(App)]
@@ -24,7 +39,7 @@ fn app() -> Html {
     let username = use_state(|| "Haekal Alexander Dinova".to_string());
     let draft = use_state(String::new);
     let status = use_state(|| "Connecting".to_string());
-    let messages = use_state(Vec::<ChatMessage>::new);
+    let messages = use_state(Vec::<RenderedMessage>::new);
     let sender = use_mut_ref(|| None::<UnboundedSender<Message>>);
 
     {
@@ -63,7 +78,11 @@ fn app() -> Html {
                                             text,
                                         });
                                     let mut next_messages = (*read_messages).clone();
-                                    next_messages.push(chat);
+                                    next_messages.push(RenderedMessage {
+                                        sender: chat.sender,
+                                        text: chat.text,
+                                        received_at: current_time(),
+                                    });
                                     read_messages.set(next_messages);
                                 }
                                 Ok(Message::Bytes(_)) => {}
@@ -143,6 +162,12 @@ fn app() -> Html {
         })
     };
 
+    let quick_messages = [
+        "Async Rust is running smoothly.",
+        "Yew client checked in.",
+        "Websocket broadcast received.",
+    ];
+
     html! {
         <main class="app-shell">
             <section class="chat-panel">
@@ -155,23 +180,68 @@ fn app() -> Html {
                     <span class="status">{(*status).clone()}</span>
                 </header>
 
-                <section class="messages" aria-live="polite">
-                    {
-                        if messages.is_empty() {
-                            html! { <p class="empty">{"No messages yet."}</p> }
-                        } else {
-                            html! {
-                                <>
-                                    { for messages.iter().map(|message| html! {
-                                        <article class="message">
-                                            <strong>{&message.sender}</strong>
-                                            <span>{&message.text}</span>
-                                        </article>
-                                    }) }
-                                </>
+                <section class="workspace">
+                    <aside class="room-panel">
+                        <div class="room-stat">
+                            <span>{"Room"}</span>
+                            <strong>{"Module 10"}</strong>
+                        </div>
+                        <div class="room-stat">
+                            <span>{"Messages"}</span>
+                            <strong>{messages.len().to_string()}</strong>
+                        </div>
+                        <div class="quick-stack">
+                            { for quick_messages.iter().map(|quick_text| {
+                                let sender = sender.clone();
+                                let username = username.clone();
+                                let quick_text = quick_text.to_string();
+                                let button_label = quick_text.clone();
+                                html! {
+                                    <button
+                                        type="button"
+                                        class="quick-button"
+                                        onclick={Callback::from(move |_| {
+                                            let message = ChatMessage {
+                                                sender: (*username).clone(),
+                                                text: quick_text.clone(),
+                                            };
+
+                                            if let (Some(tx), Ok(payload)) = (
+                                                sender.borrow().as_ref(),
+                                                serde_json::to_string(&message),
+                                            ) {
+                                                let _ = tx.unbounded_send(Message::Text(payload));
+                                            }
+                                        })}
+                                    >
+                                        {button_label}
+                                    </button>
+                                }
+                            }) }
+                        </div>
+                    </aside>
+
+                    <section class="messages" aria-live="polite">
+                        {
+                            if messages.is_empty() {
+                                html! { <p class="empty">{"No messages yet."}</p> }
+                            } else {
+                                html! {
+                                    <>
+                                        { for messages.iter().map(|message| html! {
+                                            <article class="message">
+                                                <div class="message-meta">
+                                                    <strong>{&message.sender}</strong>
+                                                    <time>{&message.received_at}</time>
+                                                </div>
+                                                <span>{&message.text}</span>
+                                            </article>
+                                        }) }
+                                    </>
+                                }
                             }
                         }
-                    }
+                    </section>
                 </section>
 
                 <form class="composer" onsubmit={on_submit}>
