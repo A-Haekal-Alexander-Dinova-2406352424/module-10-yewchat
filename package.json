@@ -1,0 +1,12 @@
+{
+  "name": "module-10-yewchat",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "server:js": "node server-js/server.js",
+    "start": "trunk serve --address 127.0.0.1 --port 8000"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  }
+}
