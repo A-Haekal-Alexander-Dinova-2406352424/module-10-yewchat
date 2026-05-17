@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "server:js": "node server-js/server.js",
+    "server:rust": "cargo run --manifest-path rust-server/Cargo.toml",
     "start": "trunk serve --address 127.0.0.1 --port 8000"
   },
   "dependencies": {
