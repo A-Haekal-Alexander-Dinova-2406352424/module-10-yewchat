@@ -56,4 +56,14 @@ For the bonus, I added a Rust websocket server in `rust-server/` using Tokio and
 
 ## Commit and Pull Request Links
 
-The final commit and pull request links will be collected after all experiment pull requests are merged.
+### Commits
+
+- [Experiment 3.1: Original code](https://github.com/A-Haekal-Alexander-Dinova-2406352424/module-10-yewchat/commit/f4c0347634048ffdc8fe271eda77a9e05bb350e9)
+- [Experiment 3.2: Be Creative!](https://github.com/A-Haekal-Alexander-Dinova-2406352424/module-10-yewchat/commit/e711fd881d7b89d4d54cce8b81a725eebb8fc60f)
+- [Bonus: Rust Websocket server for YewChat!](https://github.com/A-Haekal-Alexander-Dinova-2406352424/module-10-yewchat/commit/6eeb732c2a3bc599eb79640aa8dbfa48dcfe85db)
+
+### Pull Requests
+
+- [PR #1: Experiment 3.1: Original code](https://github.com/A-Haekal-Alexander-Dinova-2406352424/module-10-yewchat/pull/1)
+- [PR #2: Experiment 3.2: Be Creative!](https://github.com/A-Haekal-Alexander-Dinova-2406352424/module-10-yewchat/pull/2)
+- [PR #3: Bonus: Rust Websocket server for YewChat!](https://github.com/A-Haekal-Alexander-Dinova-2406352424/module-10-yewchat/pull/3)
